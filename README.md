@@ -24,18 +24,19 @@ EduFeed is a comprehensive web-based platform designed to bridge the gap between
 ## 🔧 Installation & Setup
 
 1. **Clone the repository**
-   ```bash
+
   git clone [https://github.com/sanchit-2511/EduFeed-Syllabus-Feedback.git](https://github.com/sanchit-2511/EduFeed-Syllabus-Feedback.git)
 
 2. **Install dependencies**
-   ```bash
+
 pip install -r requirements.txt
 
 3. **Run the application**
-   ```bash
+
 python app.py
 
 4. **Access in Browser**
+
 Open http://127.0.0.1:5000/
 
 ## 🤠 Author
