@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .dashboard-card {
+      background-color: #F4EBFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .dashboard-header {
+      background-color: #5007f5;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+    .dashboard-header img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #7F56D9;
+      color: white;
+      border: white 1px solid;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .logout-btn:hover {
+      background-color: #42307D;
+      border: white 1px solid;
+    }
+    .dashboard-content {
+      padding: 30px 25px;
+    }
+    .dashboard-content h4 {
+      color: #42307D;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    label {
+      font-weight: bold;
+      color: #42307D;
+    }
+    .btn-primary {
+      background-color: #6941C6;
+      border-color: #6941C6;
+      margin-top: 9px;
+    }
+    .btn-primary:hover {
+      background-color: #5007f5;
+      border-color: #5007f5;
+    }
+    option:hover {
+      background-color: #F4EBFF;
+      color: #2C1C5F;
+    }
+    .submitted-status .badge {
+    font-size: 0.8rem;
+    margin: 2px;
+    padding: 8px 16px;
+    }
+  </style>
+</head>
+<body>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} mt-3">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="dashboard-card">
+          <div class="dashboard-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+          </div>
+          <div class="dashboard-content">
+            <h4>Welcome, {{ name }}</h4>
+              <form action="/dashboard" method="post">
+              <div class="mb-3">
+                <label for="department" class="form-label">Select Department</label>
+                <select class="form-select" id="department" name="department_name" required>
+                  <option value="">Choose your department...</option>
+                  <option>B.Sc. Computer Science</option>
+                  <option>B.Sc. Data Science</option>
+                  <option>B.Sc. Information Technology</option>
+                  <option>B.Sc. Environmental Science</option>
+                  <option>B.Sc. Packaging Technology</option>
+                  <option>B.Sc. Artificial Intelligence</option>
+                  <option>B.A.M.M.C</option>
+                  <option>B.M.S</option>
+                  <option>B.Com</option>
+                  <option>B.Com (Entrepreneurship)</option>
+                  <option>B.Com (Management and Accounting with Finance)</option>
+                  <option>B.Com (Accounting and Finance)</option>
+                  <option>B.Com (Banking and Insurance)</option>
+                  <option>B.Com (Financial Markets)</option>
+                  <!-- Add more departments as needed -->
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="year" class="form-label">Select Academic Year</label>
+                <select class="form-select" id="year" name="year" required>
+                  <option value="">Choose year...</option>
+                  <option>First Year (FY)</option>
+                  <option>Second Year (SY)</option>
+                  <option>Third Year (TY)</option>
+                </select>
+              </div>
+<div>         
+  {% if submitted_feedback %}
+    <div class="submitted-status mt-4">
+      <h6>✅ Already Submitted Feedbacks:</h6>
+      {% for item in submitted_feedback %}
+        <span class="badge" style="background-color: #9c75f5ff; color: #1f0658ff;">
+          {{ item.department_name }} - {{ item.year }}
+        </span>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>
+<div>
+{% set disable_button = false %}
+{% if submitted_feedback %}
+  {% for item in submitted_feedback %}
+    {% if item.department_name == request.form.get('department_name') and item.year == request.form.get('year') %}
+      {% set disable_button = true %}
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% if disable_button %}
+  <center><button type="submit" class="btn btn-secondary" disabled>View Syllabus</button></center>
+{% else %}
+  <center><button type="submit" class="btn btn-primary">View Syllabus</button></center>
+{% endif %}
+</div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

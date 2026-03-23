@@ -1,0 +1,8 @@
+<select name="department_id" class="form-select">
+  <option value="">-- Select Department --</option>
+  {% for dept in departments %}
+    <option value="{{ dept.id }}" {% if user.department_id == dept.id %}selected{% endif %}>
+      {{ dept.name }}
+    </option>
+  {% endfor %}
+</select>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Manage Departments</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .admin-card {
+      background-color: #F4EBFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+    .admin-header {
+      background-color: #5007f5;
+      padding:7px;
+      margin: 0;
+    }
+    .admin-header img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    .page-title {
+      font-size: 1.8rem;
+      color: #42307D;
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+    .section-label {
+      font-size: 1.2rem;
+      color: #6941C6;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      background-color: #6941C6;
+      border-color: #6941C6;
+    }
+    .btn-primary:hover {
+      background-color: #5007f5;
+      border-color: #5007f5;
+    }
+    .list-group {
+      max-height: 200px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+.btn-delete {
+  background-color: #e93434;
+  border-color: #e93434;
+  color: rgb(255, 255, 255);
+}
+.btn-delete:hover {
+  background-color: #e70303;
+  border-color: #e70303;
+  color: rgb(255, 255, 255);
+}
+
+.btn-edit{
+  background-color: #6941C6;
+  border: #6941C6 3px solid;
+  color: white;
+}
+.btn-edit:hover {
+  background-color: #5007f5;
+  border-color: #5007f5;
+  color: white;
+}
+</style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="admin-card">
+          
+          <!-- Header -->
+          <div class="admin-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+          </div>
+          
+          <!-- Title -->
+          <div class="page-title">Manage Departments</div>
+          
+          <!-- Add Department Section -->
+<div class="px-4">
+  <div class="section-label">➕ Add Department</div>
+  <form method="POST" action="{{ url_for('add_department') }}">
+    <div class="input-group mb-3">
+      <input type="text" name="department_name" class="form-control" placeholder="Enter Department Name" required>
+      <button class="btn btn-primary" type="submit">Add</button>
+    </div>
+  </form>
+</div>
+
+<!-- Edit/Delete Section -->
+<div class="px-4">
+  <div class="section-label">✔️ Edit/Delete Departments</div>
+
+  <div class="list-group mb-2">
+    {% for dept in departments %}
+    <label class="list-group-item d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <input class="form-check-input me-2" type="checkbox" data-dept-id="{{ dept.id }}" value="{{ dept.id }}">
+        {{ dept.name }}
+      </div>
+
+      <!-- separate edit form per department (no nesting) -->
+      <form method="POST" action="{{ url_for('edit_department', dept_id=dept.id) }}" class="d-flex align-items-center" style="gap:8px; margin:0;">
+        <input type="text" name="new_name"
+               class="form-control form-control-sm"
+               placeholder="Rename"
+               value="{{ dept.name }}"
+               style="width:160px;">
+        <button class="btn btn-edit">Save</button>
+      </form>
+    </label>
+    {% endfor %}
+  </div>
+
+  <!-- hidden delete form (will be filled by JS) -->
+  <form method="POST" action="{{ url_for('delete_departments') }}" id="deleteForm" style="display:none;"></form>
+
+  <!-- Action Buttons -->
+  <div class="action-buttons">
+    <button class="btn btn-delete" type="button" id="deleteBtn">Delete</button>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark">Back</a>
+  </div>
+</div>
+
+          
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const editBtn = document.getElementById('editButton');
+
+    editBtn.addEventListener('click', () => {
+      // Find all checked checkboxes
+      const checked = document.querySelectorAll('.list-group-item input[type="checkbox"]:checked');
+
+      checked.forEach(checkbox => {
+        const label = checkbox.parentElement;
+        
+        // Avoid creating multiple inputs if already in edit mode
+        if (label.querySelector('input[type="text"]')) return;
+
+        // Get current department name
+        const currentText = label.textContent.trim();
+
+        // Clear label and insert editable input
+        label.innerHTML = `
+          <input class="form-control form-control-sm" type="text" value="${currentText.replace('✓', '').trim()}">
+          <button class="btn btn-sm btn-success saveBtn ms-2">Save</button>
+        `;
+
+        // Handle Save button
+        label.querySelector('.saveBtn').addEventListener('click', () => {
+          const newValue = label.querySelector('input[type="text"]').value;
+          label.innerHTML = `
+            <input class="form-check-input me-1" type="checkbox">
+            ${newValue}
+          `;
+        });
+      });
+    });
+  });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const deleteBtn = document.getElementById('deleteBtn');
+  deleteBtn.addEventListener('click', () => {
+    // find checked checkboxes
+    const checked = document.querySelectorAll('.list-group input[type="checkbox"]:checked');
+    if (checked.length === 0) {
+      alert('Please select at least one department to delete.');
+      return;
+    }
+    if (!confirm('Delete selected department(s)? This will also remove related subjects and user links.')) return;
+
+    const deleteForm = document.getElementById('deleteForm');
+    // clear previous hidden fields
+    deleteForm.innerHTML = '';
+
+    checked.forEach(cb => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_departments'; // server expects this name
+      input.value = cb.value;
+      deleteForm.appendChild(input);
+    });
+
+    deleteForm.submit();
+  });
+});
+</script>
+
+</body>
+</html>
+

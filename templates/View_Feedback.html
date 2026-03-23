@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduFeed - View Feedback</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .admin-card {
+      background-color: #F4EBFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .admin-header {
+      background-color: #5007F5;
+      margin: 0;
+      padding: 0;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      overflow: hidden;
+    }
+    .admin-header img {
+      width: 300px;
+      height: auto;
+      display: block;
+      margin: 0;
+      padding: 20px;
+    }
+    .page-title {
+      font-size: 1.8rem;
+      color: #42307D;
+      font-weight: bold;
+      margin: 20px 0;
+      text-align: center;
+    }
+    .section-heading {
+      font-size: 1.2rem;
+      color: #42307D;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .btn-deeplavender {
+      background-color: #6941C6;
+      border-color: #6941C6;
+      color: white;
+    }
+    .btn-deeplavender:hover {
+      background-color: #5007F5;
+      border-color: #5007F5;
+      color: white;
+    }
+    .card-custom {
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .table th {
+      background-color: #9E77ED;
+      color: white;
+    }
+    .collapse-row {
+      background-color: #FCFAFF;
+    }
+    .filter-section {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container py-5">
+  <div class="admin-card">
+    <!-- Header -->
+    <div class="admin-header">
+      <center><img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo"></center>
+    </div>
+
+    <!-- Page Title -->
+    <div class="page-title">🗂️ View Feedback Submissions</div>
+
+    <!-- Filters -->
+    <div class="section px-4">
+      <h5 class="section-heading">🔹 Filters</h5>
+      <div class="row filter-section">
+        <div class="col-md-3 mb-2">
+          <select class="form-select">
+            <option>Student</option>
+            <option>Internal Teacher</option>
+            <option>External Teacher</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <select class="form-select">
+            <option>Data Science</option>
+            <option>Computer Science</option>
+            <option>Mathematics</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <select class="form-select">
+            <option>First Year</option>
+            <option>Second Year</option>
+            <option>Third Year</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-2">
+          <button class="btn btn-deeplavender w-100">Apply Filters</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feedback Table -->
+<div class="section px-4 mb-4">
+  <h5 class="section-heading">🔹 Feedback Submissions</h5>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>User Name</th>
+          <th>Role</th>
+          <th>Department</th>
+          <th>Year of Syllabus</th>
+          <th>Date/Time</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+  {% for fb in feedbacks %}
+  <tr>
+    <td>{{ fb.user_name }}</td>
+    <td>{{ fb.role }}</td>
+    <td>{{ fb.department or '-' }}</td>
+    <td>{{ fb.year or '-' }}</td>
+    <td>{{ fb.submitted_at }}</td>
+    <td>
+      <button class="btn btn-sm btn-deeplavender" data-bs-toggle="collapse" data-bs-target="#details{{ loop.index }}">+</button>
+    </td>
+  </tr>
+  <tr class="collapse collapse-row" id="details{{ loop.index }}">
+    <td colspan="6">
+      <strong>Feedback Details:</strong>
+      <ul class="mt-2">
+        {% for ans in fb.answers %}
+        <li>{{ ans }}</li>
+        {% endfor %}
+      </ul>
+    </td>
+  </tr>
+  {% endfor %}
+</tbody>
+    </table>
+  </div>
+
+  <!-- Export Buttons -->
+  <div class="d-flex justify-content-end gap-2 mt-2">
+    <a href="{{ url_for('export_feedback_csv') }}" class="btn btn-deeplavender">Export CSV</a>
+    <a href="{{ url_for('export_feedback_pdf') }}" class="btn btn-outline-dark">Export PDF</a>
+  </div>
+</div>
+
+<!-- Back Button -->
+<div class="text-center mb-4">
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark">Back to Dashboard</a>
+</div>
+
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

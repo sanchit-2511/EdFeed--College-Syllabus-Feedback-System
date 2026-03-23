@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduFeed - Syllabus View</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .syllabus-card {
+      background-color: #F4EBFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .syllabus-header {
+      background-color: #5007f5;
+      text-align: center;
+      padding: 20px;
+      color: white;
+      position: relative;
+    }
+    .syllabus-header img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    .syllabus-content {
+      padding: 30px 25px;
+    }
+    .syllabus-content h4 {
+      color: #42307D;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    table {
+      background-color: white;
+    }
+    table.table thead th {
+      background-color: #ba9cf5 !important;
+      color: #42307D !important;
+    }
+    td {
+      background-color: #FCFAFF;
+    }
+    .btn-primary {
+      background-color: #6941C6;
+      border-color: #6941C6;
+    }
+    .btn-primary:hover {
+      background-color: #5007f5;
+      border-color: #7F56D9;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="syllabus-card">
+          <div class="syllabus-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+          </div>
+          <div class="syllabus-content">
+            <h4>Syllabus for {{ department }} - {{ year }}</h4>
+            {% if syllabus_data %}
+  <div class="table-responsive">
+    <table class="table table-bordered mt-4">
+      <thead class="table-light">
+        <tr>
+          <th>Subject</th>
+          <th>Topics</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for subject, topics in syllabus_data.items() %}
+          <tr>
+            <td>{{ subject }}</td>
+            <td>
+              <ul>
+                {% for topic in topics %}
+                  <li>{{ topic }}</li>
+                {% endfor %}
+              </ul>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <p>No syllabus found for the selected department and year.</p>
+{% endif %}
+            <div class="d-flex justify-content-between mt-4">
+              <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">Back</a>
+              <a href="{{ url_for('feedback') }}" class="btn btn-primary">Proceed to Feedback</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

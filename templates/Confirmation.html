@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Thank You</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .confirmation-card {
+      background-color: #F4EBFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      overflow: hidden;
+    }
+    .confirmation-header {
+      background-color: #5007f5;
+      text-align: center;
+      padding: 20px;
+      color: white;
+    }
+    .confirmation-header img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    .emoji-row {
+      font-size: 2rem;
+      margin-top: 20px;
+      color: #6941C6;
+    }
+    .thank-you {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #42307D;
+      margin-top: 20px;
+    }
+    .subtitle {
+      font-size: 20px;
+      color: #6941C6;
+      margin-bottom: 30px;
+    }
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background-color: #6941C6;
+      border-color: #6941C6;
+    }
+    .btn-primary:hover {
+      background-color: #5007f5;
+      border-color: #5007f5;
+    }
+    .btn-outline-secondary:hover {
+      background-color: #42307D;
+      border: white 1px solid;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="confirmation-card">
+          <!-- Header with logo -->
+          <div class="confirmation-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+          </div>
+          
+          <!-- Celebration Emojis -->
+          <div class="emoji-row">
+            🎉
+          </div>
+
+          <!-- Main Thank You Message -->
+          <div class="thank-you">Thank You, {{ name }} !</div>
+          <p style='color: #42307D;'>Your feedback for <strong>{{ department }}</strong> - <strong>{{ year }}</strong> has been successfully submitted.</p>
+          <div class="subtitle">
+            Your feedback helped us improve our syllabus. <br>
+            We appreciate your effort !
+          </div>
+
+          <!-- Countdown Timer -->
+          <div style="text-align: center; margin-top: 20px; color: #5007f5;">
+              <p>You will be redirected to your dashboard in <span id="countdown">5</span> seconds.</p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="button-group">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Give More Feedback</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-secondary">Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let seconds = 5;
+  const countdownEl = document.getElementById('countdown');
+
+  // Countdown timer
+  const countdownInterval = setInterval(() => {
+      seconds--;
+      countdownEl.textContent = seconds;
+      if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          window.location.href = "{{ url_for('dashboard') }}";
+      }
+  }, 1000);
+
+  // Prevent back navigation — go to dashboard
+  window.history.pushState(null, "", window.location.href);
+  window.onpopstate = function () {
+      window.location.href = "{{ url_for('dashboard') }}";
+  };
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+

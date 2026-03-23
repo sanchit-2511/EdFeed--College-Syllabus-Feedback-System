@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Manage Questions</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .admin-card {
+      background-color: #F4EBFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+      text-align: center;
+    }
+    .admin-header {
+      background-color: #5007f5;
+      padding:7px;
+      margin: 0;
+    }
+    .admin-header img {
+      max-width: 300px;
+      width: 100%;
+      padding: 10px;
+      height: auto;
+    }
+    .page-title {
+      font-size: 1.8rem;
+      color: #42307D;
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+    .section-label {
+      font-size: 1.2rem;
+      color: #6941C6;
+      font-weight: bold;
+      margin-top: 25px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .btn-primary {
+      background-color: #6941C6;
+      border-color: #6941C6;
+    }
+    .btn-primary:hover {
+      background-color: #5007F5;
+      border-color: #5007F5;
+    }
+    .btn-delete {
+  background-color: #e93434;
+  border-color: #e93434;
+  color: rgb(255, 255, 255);
+    }
+    .btn-delete:hover {
+  background-color: #e70303;
+  border-color: #e70303;
+      color: rgb(255, 255, 255);
+    }
+    .btn-edit {
+  background-color: #6941C6;
+  border: #6941C6 3px solid;
+  color: white;
+    }
+    .btn-edit:hover {
+  background-color: #5007f5;
+  border-color: #5007f5;
+  color: white;
+    }
+    .list-group {
+      max-height: 250px;
+      overflow-y: auto;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-md-12">
+        <div class="admin-card">
+
+          <!-- Header -->
+          <div class="admin-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+          </div>
+
+          <!-- Title -->
+          <div class="page-title">Manage Questions</div>
+
+          <div class="px-4">
+
+<!-- Role Selector -->
+<div class="section-label">✔️ Select Role</div>
+<form method="POST" action="{{ url_for('add_question') }}" class="d-flex align-items-center mb-3" style="gap:10px;">
+  <select class="form-select" name="role" style="width:200px; height:40px;" required>
+    <option value="student">Student</option>
+    <option value="internal">Internal Teacher</option>
+    <option value="external">External Teacher</option>
+  </select>
+  <input type="text" class="form-control" name="text" placeholder="Enter new question here..." required style="height:40px; flex:1;">
+  <button class="btn btn-primary" style="height:40px; white-space:nowrap;">➕ Add</button>
+</form>
+
+<!-- Questions List -->
+<div class="section-label">✔️ Questions List</div>
+
+<div class="list-group mb-3">
+  {% for role, qs in questions.items() %}
+    <h6 class="mt-3">{{ role|capitalize }} Questions</h6>
+    {% for q in qs %}
+      <div class="list-group-item d-flex justify-content-between align-items-center" style="gap:10px;">
+        <!-- Left: checkbox + text -->
+        <div class="d-flex align-items-center" style="flex:1; gap:8px;">
+          <input type="checkbox" class="q-checkbox" data-id="{{ q.id }}">
+          <span>{{ q.question_text }}</span>
+        </div>
+
+        <!-- Right: inline edit form (separate form, not nested in delete form) -->
+        <form method="POST" action="{{ url_for('edit_question', qid=q.id) }}" class="d-flex align-items-center" style="gap:8px; margin:0;">
+          <input type="text" name="new_text" class="form-control form-control-sm" value="{{ q.question_text }}" style="width:200px;">
+          <button class="btn btn-edit">Save</button>
+        </form>
+      </div>
+    {% endfor %}
+  {% endfor %}
+</div>
+
+<!-- Hidden delete form (we'll populate and submit it from JS) -->
+<form method="POST" action="{{ url_for('delete_questions') }}" id="deleteForm" style="display:none;"></form>
+
+<!-- Action Buttons -->
+<div class="d-flex justify-content-center gap-3 mb-4 flex-wrap">
+  <button class="btn btn-delete" id="deleteBtn" type="button">Delete</button>
+  <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-dark">Back</a>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS for dynamic question list and inline edit -->
+  <script>
+    const questionsByRole = {
+      student: [
+        "How relevant is the syllabus to your career goals?",
+        "Is the syllabus completed on time?",
+        "How well are the syllabus objectives explained?",
+        "Are practicals well integrated into the syllabus?",
+        "How satisfied are you with topic depth?"
+      ],
+      internal: [
+        "Does the syllabus cover emerging trends?",
+        "Is the syllabus feasible to teach in time?",
+        "Are topics aligned with academic goals?",
+        "Does syllabus need updating?",
+        "Is evaluation aligned with outcomes?"
+      ],
+      external: [
+        "Does this syllabus align with industry standards?",
+        "Would you recommend any changes?",
+        "Are topics logically ordered?",
+        "Does the syllabus promote critical thinking?",
+        "How well does the syllabus reflect academic benchmarks?"
+      ]
+    };
+
+    const roleSelector = document.getElementById('roleSelector');
+    const questionList = document.getElementById('questionList');
+    const newQuestionInput = document.getElementById('newQuestionInput');
+    const addQuestionBtn = document.getElementById('addQuestionBtn');
+    const editButton = document.getElementById('editButton');
+
+    function renderQuestions(role) {
+      questionList.innerHTML = "";
+      questionsByRole[role].forEach((question, index) => {
+        const item = document.createElement("label");
+        item.className = "list-group-item";
+        item.innerHTML = `
+          <input class="form-check-input me-1" type="checkbox" data-index="${index}">
+          ${question}
+        `;
+        questionList.appendChild(item);
+      });
+    }
+
+    roleSelector.addEventListener("change", () => {
+      renderQuestions(roleSelector.value);
+    });
+
+    addQuestionBtn.addEventListener("click", () => {
+      const role = roleSelector.value;
+      const newQuestion = newQuestionInput.value.trim();
+      if (newQuestion) {
+        questionsByRole[role].push(newQuestion);
+        renderQuestions(role);
+        newQuestionInput.value = "";
+      }
+    });
+
+    editButton.addEventListener("click", () => {
+      const role = roleSelector.value;
+      const checked = questionList.querySelectorAll('input[type="checkbox"]:checked');
+
+      checked.forEach(checkbox => {
+        const label = checkbox.parentElement;
+        if (label.querySelector('input[type="text"]')) return;
+
+        const originalText = label.textContent.trim();
+        label.innerHTML = `
+          <input class="form-control form-control-sm mb-1" type="text" value="${originalText}">
+          <button class="btn btn-sm btn-success saveBtn mt-1">Save</button>
+        `;
+
+        label.querySelector('.saveBtn').addEventListener('click', () => {
+          const newValue = label.querySelector('input[type="text"]').value;
+          const index = checkbox.dataset.index;
+          questionsByRole[role][index] = newValue;
+          renderQuestions(role);
+        });
+      });
+    });
+
+    // Initial render
+    renderQuestions(roleSelector.value);
+  </script>
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const deleteBtn = document.getElementById('deleteBtn');
+  const deleteForm = document.getElementById('deleteForm');
+
+  deleteBtn.addEventListener('click', () => {
+    const checked = Array.from(document.querySelectorAll('.q-checkbox:checked'));
+    if (checked.length === 0) {
+      alert('Please select at least one question to delete.');
+      return;
+    }
+    if (!confirm(`Delete ${checked.length} selected question(s)? This is permanent.`)) return;
+
+    // clear any old inputs
+    deleteForm.innerHTML = '';
+
+    // append hidden inputs for each selected question
+    checked.forEach(cb => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'selected_questions';   // server expects this name
+      input.value = cb.dataset.id;
+      deleteForm.appendChild(input);
+    });
+
+    deleteForm.submit();
+  });
+});
+</script>
+
+</body>
+</html>

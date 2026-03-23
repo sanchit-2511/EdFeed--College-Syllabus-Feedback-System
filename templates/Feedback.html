@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Feedback Form</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .feedback-card {
+      background-color: #F4EBFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .feedback-header {
+      background-color: #5007f5;
+      padding: 10px;
+      text-align: center;
+    }
+    .feedback-header img { max-width: 260px; }
+    .feedback-content {
+      padding: 30px 25px;
+    }
+    .feedback-content h4 {
+      color: #42307D;
+      margin-bottom: 25px;
+      text-align: center;
+    }
+    label { font-weight: bold; color: #42307D; }
+    .btn-primary { background-color: #6941C6; border-color: #6941C6; }
+    .btn-primary:hover { background-color: #5007F5; border-color: #5007F5; }
+    .form-check-label { cursor: pointer; display: inline-block; }
+    .navigation-buttons { display:flex; justify-content:space-between; gap:12px; margin-top:12px; }
+    .question-step { padding: 10px 0; }
+    .d-none { display:none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10">
+        <div class="feedback-card">
+          <div class="feedback-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+          </div>
+          <div class="feedback-content">
+            <h4>Feedback for {{ department }} - {{ year }}</h4>
+
+            <!-- progress bar shows dynamic total -->
+            <div class="progress mb-4" style="height: 20px;">
+              <div id="progressBar" class="progress-bar bg-success" role="progressbar" style="width: {{ 100 / (questions|length if questions|length>0 else 1) }}%;">
+                  1 / {{ questions|length if questions|length>0 else 1 }}
+              </div>
+            </div>
+
+            <!-- main form: radios are named q1, q2, ... and will be submitted together -->
+            <form id="feedbackForm" method="post" action="{{ url_for('feedback') }}">
+
+              {% if questions|length == 0 %}
+                <div class="alert alert-warning">No questions available for your role at the moment.</div>
+              {% else %}
+{% for q in questions %}
+  {% set i = loop.index %}
+  <div class="question-step {% if i != 1 %}d-none{% endif %}" id="step{{ i }}">
+    <label class="form-label mb-3">{{ i }}. {{ q['question_text'] }}</label>
+
+    {% for opt in ['Very Bad', 'Bad', 'Neutral', 'Good', 'Very Good'] %}
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="q{{ i }}" id="q{{ i }}-{{ loop.index }}" value="{{ opt }}">
+        <label class="form-check-label" for="q{{ i }}-{{ loop.index }}"
+          style="background-color:{% if opt == 'Very Bad' %}#D32F2F{% elif opt == 'Bad' %}#F57C00{% elif opt == 'Neutral' %}#FBC02D{% elif opt == 'Good' %}#388E3C{% elif opt == 'Very Good' %}#2E7D32{% endif %}; color:white; padding:6px 10px; border-radius:8px;">
+          {{ opt }}
+        </label>
+      </div>
+    {% endfor %}
+
+    <div class="navigation-buttons">
+      {% if i > 1 %}
+        <button type="button" class="btn btn-outline-secondary" onclick="prevStep({{ i-1 }})">Previous</button>
+      {% else %}
+        <a href="{{ url_for('syllabus') }}" class="btn btn-outline-secondary">Back</a>
+      {% endif %}
+
+      {% if i < questions|length %}
+        <button type="button" class="btn btn-primary" onclick="nextStep({{ i+1 }}, 'q{{ i }}')">Next</button>
+      {% else %}
+        <button type="submit" class="btn btn-primary">Submit Feedback</button>
+      {% endif %}
+    </div>
+  </div>
+{% endfor %}
+
+              {% endif %}
+
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // TOTAL dynamically determined from template context
+  const TOTAL_Q = {{ questions|length if questions|length>0 else 1 }};
+
+  function updateProgressBar(step) {
+    const progressPercent = Math.round((step / TOTAL_Q) * 100);
+    const bar = document.getElementById('progressBar');
+    bar.style.width = progressPercent + '%';
+    bar.innerText = `${step} / ${TOTAL_Q}`;
+  }
+
+  function nextStep(step, questionName) {
+    const selected = document.querySelector(`input[name="${questionName}"]:checked`);
+    if (!selected) {
+      alert("Please select an option before proceeding!");
+      return;
+    }
+    document.querySelectorAll('.question-step').forEach(el => el.classList.add('d-none'));
+    document.getElementById('step' + step).classList.remove('d-none');
+    updateProgressBar(step);
+  }
+
+  function prevStep(step) {
+    document.querySelectorAll('.question-step').forEach(el => el.classList.add('d-none'));
+    document.getElementById('step' + step).classList.remove('d-none');
+    updateProgressBar(step);
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

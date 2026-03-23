@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduFeed - Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #FCFAFF;
+      font-family: Arial, sans-serif;
+    }
+    .admin-card {
+      background-color: #F4EBFF;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    .admin-header {
+      background-color: #5007f5;
+      text-align: center;
+      padding: 20px;
+      color: white;
+      position: relative;
+    }
+    .admin-header img {
+      max-width: 300px;
+      width: 100%;
+      height: auto;
+    }
+    .logout-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background-color: #7F56D9;
+      color: white;
+      border: 1px white solid;
+      padding: 6px 12px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .logout-btn:hover {
+      background-color: #42307D;
+      border: white 1px solid;
+    }
+    .admin-content {
+      padding: 30px 25px;
+    }
+    .admin-content h4 {
+      color: #42307D;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: bold;
+      color: #42307D;
+      margin: 25px 0 15px;
+      text-align: left;
+    }
+    .kpi-card {
+      background-color: #6941C6;
+      color: white;
+      border-radius: 16px;
+      padding: 30px 20px;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+      text-decoration: none;
+      display: block;
+      height: 100%;
+    }
+    .kpi-card:hover {
+      background-color: #5007f5ff;
+      transform: translateY(-4px);
+      text-decoration: none;
+      color: white;
+    }
+    .kpi-title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .kpi-cards {
+      background-color: #c692f7ff;
+      color: #2C1C5F;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+    .kpi-cards:hover {
+      background-color: #8410f0ff;
+      transform: translateY(-4px);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-md-12">
+        <div class="admin-card">
+          <div class="admin-header">
+            <img src="{{ url_for('static', filename='images/Logo.png') }}" alt="EduFeed Logo">
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+          </div>
+          <div class="admin-content">
+            <h4>Welcome, {{name}}!</h4>
+
+            <!-- Quick Stats Section -->
+<div class="section-title">Quick Stats</div>
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="kpi-cards">
+      <div class="kpi-titles">Users</div>
+      <h3>{{ total_users }}</h3>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-cards">
+      <div class="kpi-titles">Departments</div>
+      <h3>{{ total_departments }}</h3>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-cards">
+      <div class="kpi-titles">Subjects</div>
+      <h3>{{ total_subjects }}</h3>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="kpi-cards">
+      <div class="kpi-titles">Feedbacks</div>
+      <h3>{{ total_feedbacks }}</h3>
+    </div>
+  </div>
+</div>
+
+            <!-- Managing Controls Section -->
+            <div class="section-title">Managing Controls</div>
+            <div class="row g-3">
+              <div class="col-6 col-md-6">
+                <a href="{{ url_for('admin_manage_departments') }}" class="kpi-card">
+                  <div class="kpi-title">Manage Departments</div>
+                </a>
+              </div>
+              <div class="col-6 col-md-6">
+                <a href="{{ url_for('admin_manage_syllabus') }}" class="kpi-card">
+                  <div class="kpi-title">Manage Syllabus (Subjects & Topics)</div>
+                </a>
+              </div>
+              <div class="col-6 col-md-6">
+                <a href="{{ url_for('manage_users') }}" class="kpi-card">
+                  <div class="kpi-title">Manage Users</div>
+                </a>
+              </div>
+              <div class="col-6 col-md-6">
+                <a href="{{ url_for('admin_manage_questions') }}" class="kpi-card">
+                  <div class="kpi-title">Manage Questions</div>
+                </a>
+              </div>
+            </div>
+
+            <!-- Viewing Controls Section -->
+            <div class="section-title">Viewing Controls</div>
+            <div class="row g-3">
+              <div class="col-12">
+                <a href="{{ url_for('admin_feedback_reports') }}" class="kpi-card">
+                  <div class="kpi-title">View Feedback Reports</div>
+                </a>
+              </div>
+              <div class="col-12">
+                <a href="{{ url_for('admin_view_feedback') }}" class="kpi-card">
+                  <div class="kpi-title">View Feedback</div>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
